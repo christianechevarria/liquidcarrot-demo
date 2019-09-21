@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Flappy Bird Demo | carrot </title>
+  <link rel="shortcut icon" href="img/favicon.png" />
+  <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+  <link type="text/css" rel="stylesheet" href="https://wikiki.github.io/css/documentation.css?v=201904261505">
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+  <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@6.0.0/dist/vis-network.min.css">
+  <style>
+  @font-face { font-family: "Ionicons"; src: url("https://cdn.jsdelivr.net/ionicons/2.0.1/fonts/ionicons.eot?v=2.0.1"); src: url("https://cdn.jsdelivr.net/ionicons/2.0.1/fonts/ionicons.eot?v=2.0.1#iefix") format("embedded-opentype"), url("https://cdn.jsdelivr.net/ionicons/2.0.1/fonts/ionicons.ttf?v=2.0.1") format("truetype"), url("https://cdn.jsdelivr.net/ionicons/2.0.1/fonts/ionicons.woff?v=2.0.1") format("woff"), url("https://cdn.jsdelivr.net/ionicons/2.0.1/fonts/ionicons.svg?v=2.0.1#Ionicons") format("svg"); font-weight: normal; font-style: normal; }
+
+  /* Don't import ion icons styling just for one GitHub icon */
+  .ion, .ionicons, .ion-social-github:before {
+    display: inline-block;
+    font-family: "Ionicons";
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    text-rendering: auto;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .ion-social-github:before { content: "\f233"; }
+  </style>
+  <style>
+    /* override bulma defaults */
+    .game-slider {
+      max-width: 450px;
+    }
+    .field {
+      margin-top: 1rem;
+    }
+    input[type=range].slider {
+      margin: 0;
+    }
+    input[type=range].slider:not([orient="vertical"]).has-output+output {
+      top: .2rem;
+    }
+    .label:not(:last-child) {
+      margin: 0;
+    }
+    .banner-text {
+      font-family: 'Montserrat';
+      line-height: 2.5em;
+    }
+    /* custom bulma-like styles */
+    .has-background-transparent { background: transparent !important; }
+  </style>
+  <style>
+    /* custom styles */
+  </style>
+</head>
+<body>
+  <div class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="#" style="padding:0">
+        <img src="img/carrot-logo.png" height="28">
+      </a>
+
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="https://liquidcarrot.io/">Home</a>
+        <a class="navbar-item" href="https://liquidcarrot.io/carrot">Docs</a>
+        <a class="navbar-item" href="https://github.com/liquidcarrot/example.flappy-bird/" target="_blank"><i class="ion-social-github" aria-hidden="true"></i></a>
+        <div class="navbar-item has-dropdown is-hoverable">
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="mailto:people@liquidcarrot.io?subject=Flappy%20Bird%20Demo">
+              Contact
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item" href="https://github.com/liquidcarrot/example.flappy-bird/issues/new">
+              Report an issue
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <input type="text" id="nav-search" placeholder="Search" autofocus>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="hero is-info is-large">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Self-building machine learning</h1>
+            <h2 class="subtitle">
+              Neural networks that structure themselves completely as you use them
+            </h2>
+            <ul class="py-1 list-unstyled">
+              <li class="py-2"><i class="fa fa-check-circle pr-4" aria-hidden="true"></i> Native edge computing</li>
+              <li class="py-2"><i class="fa fa-check-circle pr-4" aria-hidden="true"></i> More powerful than AutoML</li>
+              <li class="py-2"><i class="fa fa-check-circle pr-4" aria-hidden="true"></i> Applicable to any data-problem</li>
+            </ul>
+          </div>
+          <div class="column">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="hero is-dark is-bold" style="min-height:100vh">
+    <div class="hero-body">
+      <h1 class="title">
+        flappy bird playground
+      </h1>
+        <div class="columns">
+          <div class="column">
+            <canvas id="canvas" width="450" height="512"></canvas>
+            <div class="field game-slider">
+              <label class="label has-text-white">Speed</label>
+              <input id="speedSlider" class="slider has-output is-small" step="1" min="0" max="10" value="1" type="range">
+              <output id="speed" for="speedSlider">1</output>
+            </div>
+          </div>
+          <div id="app" class="column">
+            <span class="banner-text has-text-white">
+              You're watching <span class="has-text-primary">{{ population_size }}</span> neural networks design themselves to play flappy-bird right on your computer.
+              They started as
+              <div class="select is-rounded is-primary" style="padding:0 5px">
+                <select class="has-background-transparent has-text-white">
+                  <option class="has-text-dark">input & output networks</option>
+                  <option class="has-text-dark">perceptron (coming soon)</option>
+                  <option class="has-text-dark">default GRU (coming soon)</option>
+                  <option class="has-text-dark">default LSTM (coming soon)</option>
+                </select>
+              </div> but with each game they change (evolve) to become better players.
+            </span>
+            <div class="field game-slider">
+              <label class="label has-text-white">Pipe spacing</label>
+              <input id="sliderWithValue" v-model="pipe_spacing" class="slider has-output is-small" step="1" min="45" max="90" :value="pipe_spacing" type="range">
+              <output for="sliderWithValue">{{ pipe_spacing }}</output>
+            </div>
+            <div class="field game-slider">
+              <label class="label has-text-white">Elitism</label>
+              <input v-model="elitism" id="sliderWithValue1" class="slider has-output is-small" min="0" :max="population_size" value="50" step="1" type="range">
+              <output for="sliderWithValue1">{{ elitism }}</output>
+            </div>
+            <div class="field game-slider">
+              <label class="label has-text-white">Population size</label>
+              <input v-model="population_size" id="sliderWithValue2" class="slider has-output is-small" :min="elitism" max="100" step="1" type="range">
+              <output for="sliderWithValue2">{{ population_size }}</output>
+            </div>
+            <!-- <div class="field">
+              <label class="label has-text-white">Chance of mutation</label>
+              <input v-model="mutation_rate" id="sliderWithValue2" class="slider has-output is-success" min="0" max="1" step=".1" type="range">
+              <output for="sliderWithValue2">(coming soon)</output>
+            </div>
+            <div class="field">
+              <label class="label has-text-white">Times mutated</label>
+              <input v-model="mutation_amount" id="sliderWithValue2" class="slider has-output is-success" min="1" max="10" step="1" type="range">
+              <output for="sliderWithValue2">(coming soon)</output>
+            </div> -->
+          <div class="field">
+            <label class="label has-text-white">Save & Restore</label>
+            <a style="margin:12px 8px 0 0;"@click="save(champion.brain)" class="button is-warning">Export</a>
+            <a style="margin:12px 8px 0 0;"@click="restore()" class="button is-warning">Restore</a>
+          </div>
+          <div class="field">
+            <label class="label has-text-white">Visualize</label>
+            <a style="margin:12px 8px 0 0;"@click="graph(champion.brain)" class="button is-warning is-rounded">Create visualization</a>
+          </div>
+          <div class="columns">
+            <div class="column is-half">
+              <div class="visualization" ref="visualization"></div>
+            </div>
+            <div class="column"></div>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@liquid-carrot/carrot/dist/carrot.umd2.min.js"></script> -->
+  <script language="javascript" type="text/javascript" src="scripts/carrot.js"></script>
+  <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
+  <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/bird.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/main.js"></script>
+  <script language="javascript" type="text/javascript" src="scripts/Pipe.js"></script>
+  <script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <script language="javascript" type="text/javascript" src="scripts/bindings.js"></script>
+  <script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/npm/vis-network@6.0.0/dist/vis-network.min.js"></script>
+</body>
+</html>
